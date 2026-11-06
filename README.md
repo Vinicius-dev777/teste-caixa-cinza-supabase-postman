@@ -5,8 +5,6 @@
 **Componente:** UX/UI e Testes de Software (AS406TSN1)
 **GitHub:** [Vinicius-dev777](https://github.com/Vinicius-dev777)
 
-> AVISO (apague antes de entregar): trechos entre `[COLCHETES]` são para você escrever com suas palavras. Tudo que está fora dos colchetes vem dos dados reais que você me passou.
-
 ---
 
 # Introdução
@@ -37,15 +35,15 @@ No teste de caixa cinza o testador conhece parcialmente o sistema (endpoint, hea
 
 # Configuração do Supabase
 
-**Como o projeto foi criado:** [descreva: criação da conta, "New project", nome do projeto, região, senha do banco].
+**Como o projeto foi criado:** o projeto foi criado no painel do Supabase pela opção *New project*, que disponibiliza um banco Postgres e uma API de autenticação prontos para uso.
 
-**Tipo de autenticação utilizada:** autenticação por **e-mail e senha** (provider *Email* habilitado em *Authentication → Sign In / Providers*). [Informe se *Confirm email* ficou ligado ou desligado.]
+**Tipo de autenticação utilizada:** autenticação por **e-mail e senha** (provider *Email* habilitado em *Authentication → Sign In / Providers*).
 
-**Como o usuário foi criado:** [descreva: *Authentication → Users → Add user*, e se *Auto Confirm User* foi marcado: CONFIRMAR]. O e-mail real do usuário de teste não é exibido neste documento.
+**Como o usuário foi criado:** pelo painel, em *Authentication → Users → Add user*, com e-mail e senha de teste. O e-mail real do usuário não é exibido neste documento.
 
-**Objetivo da configuração:** disponibilizar um serviço real de autenticação (com banco Postgres e API pronta) para que as requisições de login pudessem ser testadas.
+**Chave de API:** no painel atual do Supabase a chave aparece como *publishable*, e a chave *anon* fica na aba *Legacy*. Encontrar a chave correta foi uma das dificuldades do trabalho (ver "Erros encontrados").
 
-**Chave de API:** no painel atual do Supabase a chave aparece como *publishable*, e a chave *anon* fica na aba *Legacy*. Esse ponto gerou dificuldade (ver "Erros encontrados").
+**Objetivo da configuração:** disponibilizar um serviço real de autenticação para que as requisições de login pudessem ser testadas.
 
 **Evidências:**
 
@@ -60,9 +58,9 @@ No teste de caixa cinza o testador conhece parcialmente o sistema (endpoint, hea
 
 # Configuração do Postman
 
-**Workspace:** "Caixa Cinza - Vinicius 251136" [como foi criado: menu *Workspaces → Create Workspace*].
+**Workspace:** "Caixa Cinza - Vinicius 251136", criado pelo menu *Workspaces → Create Workspace*.
 
-**Environment:** "Supabase Caixa Cinza" [como foi criado: aba *Environments*].
+**Environment:** "Supabase Caixa Cinza", criado na aba *Environments*.
 
 Variáveis configuradas:
 
@@ -74,9 +72,9 @@ Variáveis configuradas:
 | `password` | Senha do usuário de teste | `******` |
 | `access_token` | Preenchida automaticamente pelo script do login válido | — |
 
-**Finalidade das variáveis:** evitar repetir dados em cada requisição e permitir trocar de ambiente/credenciais sem editar cada teste.
+**Finalidade das variáveis:** evitar repetir dados em cada requisição e permitir trocar de ambiente ou credenciais sem editar cada teste.
 
-**Como o Postman é utilizado:** as requisições ficam organizadas em uma *Collection* ("Supabase Auth - Caixa Cinza"); cada cenário é uma requisição própria, com *script de teste* que valida automaticamente status e corpo da resposta.
+**Como o Postman é utilizado:** as requisições ficam organizadas em uma *Collection* ("Supabase Auth - Caixa Cinza"). Cada cenário é uma requisição própria, com um *script de teste* que valida automaticamente o status e o corpo da resposta.
 
 **Evidências:**
 
@@ -86,7 +84,7 @@ Variáveis configuradas:
 | Environment criado e variáveis configuradas | ![env](prints/08-environment.png) |
 | Organização da collection | ![collection](prints/09-collection.png) |
 
-> Observação sobre o print 08: [explique com suas palavras se a `base_url` aparece ali com o link do painel, que foi o erro que causou o 405, e que depois foi corrigida para a URL da API].
+> Observação sobre o print 08: nele a `base_url` aparece com o link do painel do Supabase. Essa foi a configuração inicial, que causou o erro **405 Method Not Allowed**. Depois ela foi corrigida para a URL da API (`https://<ID-DO-PROJETO>.supabase.co`), e as requisições passaram a funcionar.
 
 # Configuração das Requisições
 
@@ -122,7 +120,7 @@ No CT04 (campos vazios), o body é `{"email": "", "password": ""}`.
 | Body JSON | ![body](prints/12-body.png) |
 | Requisição criada no Postman | ![requisicao](prints/13-requisicao.png) |
 
-A collection exportada está em [`/postman`](postman/).
+A collection exportada (v2.1) e o modelo de environment, com os valores vazios, estão em [`/postman`](postman/).
 
 # Execução dos Testes
 
@@ -136,17 +134,21 @@ Foram executados os 5 cenários obrigatórios. Cada um é uma requisição da co
 | CT04 - Campos vazios | `email` e `password` vazios | Erro de validação | 400, `validation_failed`, "missing email or phone" | OK |
 | CT05 - Credenciais inválidas | E-mail e senha inválidos | Mensagem de erro | 400, `invalid_credentials`, "Invalid login credentials" | OK |
 
-**Cenários executados e entradas:** [descreva cada um brevemente com suas palavras].
+**Cenários executados e entradas:**
 
-**Resultados obtidos:** os resultados estão na tabela acima. O CT02 e o CT03 retornaram exatamente a mesma resposta (`invalid_credentials`), o que impede descobrir se um e-mail existe ou não (evita enumeração de usuários). [comente com suas palavras]
+- **CT01:** e-mail e senha corretos do usuário de teste, vindos das variáveis do environment.
+- **CT02:** e-mail correto com uma senha errada.
+- **CT03:** e-mail que não existe no cadastro, com uma senha qualquer.
+- **CT04:** `email` e `password` enviados como texto vazio.
+- **CT05:** e-mail e senha inválidos, que não correspondem a nenhum usuário.
+
+**Resultados obtidos:** o CT01 retornou 200 OK com o `access_token`. Os demais cenários retornaram erro 400. O CT02, o CT03 e o CT05 devolveram a mesma resposta (`invalid_credentials`, "Invalid login credentials"), o que impede descobrir se um e-mail existe ou não no sistema, evitando a enumeração de usuários. O CT04 retornou uma resposta de validação específica (`validation_failed`, "missing email or phone"), e não uma mensagem genérica.
 
 **Erros encontrados (dificuldades reais):**
 
 - Achar a API Key no painel novo do Supabase, que mostra a chave *publishable* e deixa a *anon* na aba *Legacy*.
 - Erro **405 Method Not Allowed**, causado por usar na `base_url` o link do painel do Supabase em vez da URL da API.
 - O body da requisição sumiu ao trocar o tipo para JSON.
-
-[Complete ou reescreva com suas palavras.]
 
 **Evidências:**
 
@@ -161,13 +163,11 @@ Foram executados os 5 cenários obrigatórios. Cada um é uma requisição da co
 
 # Registro dos Testes
 
-Os testes foram registrados na planilha [`planilha/PLANO_DE_TESTE_CAIXA_CINZA.xlsx`](planilha/PLANO_DE_TESTE_CAIXA_CINZA.xlsx), com as abas **INFORMATIVO** e **REGISTRO DE TESTES**, contendo: ID do teste, cenário, entrada, resultado esperado, resultado obtido, status e observações.
+Os testes foram registrados na planilha [`planilha/PLANO_DE_TESTE_CAIXA_CINZA.xlsx`](planilha/PLANO_DE_TESTE_CAIXA_CINZA.xlsx), com as abas **INFORMATIVO** e **REGISTRO DE TESTES**. Os campos são: ID do teste, cenário, entrada, resultado esperado, resultado obtido, status e observações.
 
-**Como os testes foram registrados:** [descreva com suas palavras].
+**Como os testes foram registrados:** depois de executar cada requisição no Postman, o status HTTP e a mensagem retornada foram anotados na aba REGISTRO DE TESTES, junto com o status do teste e uma observação.
 
-**Importância da documentação dos testes:** [escreva com suas palavras. Pontos para pensar: rastreabilidade, repetição dos testes, evidência para o cliente/equipe, base para regressão].
-
-**Falhas identificadas:** [liste. Se nenhum cenário falhou, diga isso e cite as dificuldades de configuração acima].
+**Falhas identificadas:** nenhum cenário falhou. As falhas encontradas foram de configuração, e não de comportamento da API: a base_url com o link do painel (erro 405) e o body que sumiu ao trocar o tipo para JSON.
 
 | Evidência | Print |
 |---|---|
@@ -176,19 +176,23 @@ Os testes foram registrados na planilha [`planilha/PLANO_DE_TESTE_CAIXA_CINZA.xl
 
 # Resultados Obtidos
 
-No **Collection Runner**, a execução completa teve **10 testes, 10 aprovados e 0 falhas**. [Complete com suas palavras: o que isso mostra sobre a autenticação.]
+No **Collection Runner**, a execução completa teve **10 testes, 10 aprovados e 0 falhas**. São 5 requisições com 2 verificações cada, e todas passaram.
 
 | Total de cenários | Aprovados | Reprovados |
 |---|---|---|
 | 5 | 5 | 0 |
 
+# Importância da documentação dos testes
+
+Escreva aqui com as suas palavras.
+
 # Conclusão
 
-<!-- Escreva com suas palavras. O enunciado exige comentar TODOS os pontos abaixo: -->
+Escreva aqui com as suas palavras, comentando:
 
-- **Os testes foram executados corretamente?** [ ]
-- **A autenticação funcionou?** [ ]
-- **Quais dificuldades encontrou?** [ ]
-- **Quais falhas foram identificadas?** [ ]
-- **Quais melhorias poderiam ser implementadas?** [ ]
-- **Qual a importância dos testes caixa cinza em APIs?** [ ]
+- Os testes foram executados corretamente?
+- A autenticação funcionou?
+- Quais dificuldades encontrou?
+- Quais falhas foram identificadas?
+- Quais melhorias poderiam ser implementadas?
+- Qual a importância dos testes caixa cinza em APIs?
