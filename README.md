@@ -81,10 +81,9 @@ Variáveis configuradas:
 | Evidência | Print |
 |---|---|
 | Workspace criado | ![workspace](prints/07-workspace.png) |
-| Environment criado e variáveis configuradas | ![env](prints/08-environment.png) |
 | Organização da collection | ![collection](prints/09-collection.png) |
 
-> Observação sobre o print 08: nele a `base_url` aparece com o link do painel do Supabase. Essa foi a configuração inicial, que causou o erro **405 Method Not Allowed**. Depois ela foi corrigida para a URL da API (`https://<ID-DO-PROJETO>.supabase.co`), e as requisições passaram a funcionar.
+O environment e as variáveis estão descritos na tabela acima, e o modelo exportado (com os valores vazios) está em [`/postman`](postman/).
 
 # Configuração das Requisições
 
