@@ -184,15 +184,13 @@ No **Collection Runner**, a execução completa teve **10 testes, 10 aprovados e
 
 # Importância da documentação dos testes
 
-Escreva aqui com as suas palavras.
+Documentar os testes foi importante porque deixa tudo registrado: o que foi testado, com quais dados e o que aconteceu. Com a planilha e os prints, qualquer pessoa consegue ver o resultado sem precisar refazer tudo, e eu mesmo posso repetir os testes depois, por exemplo se a API mudar (teste de regressão). O registro também serve como prova de que os testes foram feitos e ajuda a achar a origem de um problema. Anotar o erro 405 junto com a causa dele (a `base_url` com o link do painel) deixa a solução guardada para quem passar pelo mesmo problema.
 
 # Conclusão
 
-Escreva aqui com as suas palavras, comentando:
-
-- Os testes foram executados corretamente?
-- A autenticação funcionou?
-- Quais dificuldades encontrou?
-- Quais falhas foram identificadas?
-- Quais melhorias poderiam ser implementadas?
-- Qual a importância dos testes caixa cinza em APIs?
+- **Os testes foram executados corretamente?** Sim. Executei os 5 cenários pedidos no Postman e todos retornaram o resultado esperado. No Collection Runner foram 10 testes, 10 aprovados e nenhuma falha. Registrei tudo na planilha e nos prints.
+- **A autenticação funcionou?** Sim. O login válido retornou 200 OK com o `access_token`, e os casos inválidos retornaram erro 400 sem token. A senha errada e o usuário inexistente deram a mesma resposta ("Invalid login credentials"), o que evita que alguém descubra quais e-mails existem. Os campos vazios deram um erro de validação específico (`validation_failed`).
+- **Quais dificuldades encontrou?** Achar a API Key no painel novo do Supabase, que mostra a chave *publishable* e deixa a *anon* na aba *Legacy*. O erro 405 (Method Not Allowed), causado por eu ter colocado o link do painel na `base_url` em vez da URL da API. E o body da requisição que sumiu quando troquei o tipo para JSON.
+- **Quais falhas foram identificadas?** Nenhuma falha no comportamento da API. As falhas que apareceram foram de configuração minha, e todas foram corrigidas.
+- **Quais melhorias poderiam ser implementadas?** Limitar as tentativas de login para dificultar tentativas repetidas de adivinhar a senha, exigir a confirmação de e-mail e usar autenticação em dois fatores (MFA).
+- **Qual a importância dos testes caixa cinza em APIs?** Eles permitem testar a API direto pelo endpoint, sem precisar de interface, usando só o que o testador conhece (endpoint, headers, body e respostas). Assim dá para validar status, mensagens de erro e token e achar problemas antes de o sistema chegar ao usuário.
